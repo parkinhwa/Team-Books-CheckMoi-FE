@@ -82,7 +82,6 @@ const userProfile = () => {
             </S.User>
           </S.UserProfileContainer>
           <S.StyledDivider />
-          {/* TODO StudyCard SKeleton 구현하면 삭제할 예정 */}
           <S.StudyContainer>
             <Skeleton
               sx={{ height: 190 }}
