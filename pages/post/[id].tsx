@@ -18,7 +18,8 @@ import { useInView } from "../../hooks/useInView";
 
 const PostPage = () => {
   const router = useRouter();
-  const { id, studyId, tabNumber } = router.query;
+  const { id, studyId, tabNumber, isStudyMember } = router.query;
+
   const currentTab = tabNumber ? +tabNumber : 0;
   const [commentList, setCommentList] = useState<CommentsType[]>([]);
   const [currentUserId, setCurrentUserId] = useState(-1);
@@ -55,11 +56,15 @@ const PostPage = () => {
       setPost(postData);
       setPostDate(postData.createdAt.split("/"));
     };
-    if (id) getPostApi(Number(id));
+    if (id && isStudyMember) getPostApi(Number(id));
   }, []);
 
   const handleUpdateClick = async () => {
-    router.push(`/postUpdate/${id}`);
+    router.push({
+      pathname: `/postUpdate/${id}`, 
+      query: {isStudyMember}
+    });
+
   };
 
   const getAllCommentList = async (page = -1) => {
@@ -84,7 +89,7 @@ const PostPage = () => {
       setPageState({ ...pageState, totalPage });
       setLoading(false);
     };
-    getCommentList(pageState.pageNumber);
+    if(id && studyId) getCommentList(pageState.pageNumber);
   }, [pageState.pageNumber]);
 
   useEffect(() => {
@@ -150,10 +155,10 @@ const PostPage = () => {
 
   return (
     <div>
-      {!user ? (
+      {!user || !isStudyMember ? (
         <NoAccess
-          title="이 페이지는 로그인한 사용자만 이용할 수 있습니다."
-          description="책모이에 로그인하시면 다양한 서비스를 이용하실 수 있습니다."
+          title="이 페이지의 접근권한이 없습니다."
+          description="스터디 가입을 하면 페이지에 접근할 수 있습니다."
         />
       ) : (
         post.id && (

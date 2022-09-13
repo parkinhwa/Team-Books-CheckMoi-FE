@@ -5,6 +5,7 @@ import * as S from "./style";
 import { createPost, putPost } from "../../apis";
 import { useUserContext } from "../../hooks/useUserContext";
 import { NoAccess } from "../../components/NoAccess";
+import { useOurSnackbar } from "../../hooks/useOurSnackbar";
 
 interface PostFormProp {
   state: string;
@@ -14,6 +15,7 @@ interface PostFormProp {
   content: string;
   studyId: number;
   isOwner?: boolean;
+  isStudyMember: boolean;
 }
 
 interface PostErrorProp {
@@ -29,6 +31,7 @@ export const PostForm = ({
   content,
   studyId,
   isOwner,
+  isStudyMember,
 }: PostFormProp) => {
   const [postSelectValue, setPostSelectValue] = useState(selectValue);
   const [postTitle, setPostTitle] = useState(title);
@@ -45,6 +48,7 @@ export const PostForm = ({
 
   const router = useRouter();
   const { user } = useUserContext();
+  const { renderSnackbar } = useOurSnackbar();
 
   const handleSelectChange = (event: SelectChangeEvent<unknown>) => {
     setPostSelectValue(event.target.value as string);
@@ -77,20 +81,37 @@ export const PostForm = ({
       studyId,
     };
 
-    if (state === "POST") {
-      const getPostId = await createPost(postObject);
-      if (getPostId)
+    if (state === "POST")
+      try {
+        const getPostId = await createPost(postObject);
+        if (getPostId)
+          router.push({
+            pathname: `/post/${getPostId}`,
+            query: {
+              tabNumber: postSelectValue === "NOTICE" ? 0 : 1,
+              studyId,
+              isStudyMember,
+            },
+          });
+      } catch (error: any) {
+        const { message } = error.response.data.errors[0];
+        renderSnackbar(message, "error");
+      }
+    else if (state === "PUT")
+      try {
+        await putPost(postId as number, postObject);
         router.push({
-          pathname: `/post/${getPostId}`,
-          query: { tabNumber: postSelectValue === "NOTICE" ? 0 : 1, studyId },
+          pathname: `/post/${postId}`,
+          query: {
+            tabNumber: postSelectValue === "NOTICE" ? 0 : 1,
+            studyId,
+            isStudyMember,
+          },
         });
-    } else if (state === "PUT") {
-      await putPost(postId as number, postObject);
-      router.push({
-        pathname: `/post/${postId}`,
-        query: { tabNumber: postSelectValue === "NOTICE" ? 0 : 1, studyId },
-      });
-    }
+      } catch (error: any) {
+        const { message } = error.response.data.errors[0];
+        renderSnackbar(message, "error");
+      }
   };
 
   return (

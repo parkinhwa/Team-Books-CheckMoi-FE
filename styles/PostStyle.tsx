@@ -21,12 +21,14 @@ export const BoardTitleContainer = styled.div`
 export const BoardTitle = styled.div`
   margin: 1rem 0;
   font-size: 2rem;
+  cursor: default;
 `;
 
 export const BoardInfo = styled.div`
   display: flex;
   align-items: center;
   padding: 1rem 0;
+  cursor: default;
 `;
 
 export const StyledAvatar = styled(Avatar)`
@@ -48,4 +50,5 @@ export const BoardCreateDate = styled.div`
 
 export const BoardContent = styled.pre`
   padding: 1rem 0;
+  cursor: default;
 `;

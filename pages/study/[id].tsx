@@ -129,14 +129,14 @@ const StudyDetailPage = ({ studyData }: ServerSidePropType) => {
   const handlePostClick = (id: number) => {
     router.push({
       pathname: `/post/${id}`,
-      query: { tabNumber, studyId },
+      query: { tabNumber, studyId, isStudyMember },
     });
   };
 
   const handleWriteButtonClick = () => {
     router.push({
       pathname: `/postCreate`,
-      query: { tabNumber, studyId, isOwner },
+      query: { tabNumber, studyId, isOwner, isStudyMember },
     });
   };
 
